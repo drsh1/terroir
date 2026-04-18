@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
+from ai import parse_climate_preferences
 
 st.set_page_config(
     page_title="Terroir",
@@ -20,72 +21,115 @@ df = load_data()
 
 # --- SIDEBAR ---
 st.sidebar.title("🌍 Terroir")
-st.sidebar.caption("Find your perfect place on Earth")
+st.sidebar.caption("Find the best place to live for you on Earth.")
 st.sidebar.divider()
 
-st.sidebar.subheader("Climate filters")
+# --- AI SEARCH ---
+st.sidebar.subheader("✨ AI search")
 
-temp_min, temp_max = st.sidebar.slider(
-    "Average annual temperature (°C)",
-    min_value=-10, max_value=40,
-    value=(int(df.avg_temp.min()), int(df.avg_temp.max()))
+ai_input = st.sidebar.text_area(
+    "Describe your ideal place to live",
+    placeholder="e.g. I love warm sunny summers, mild winters, not too humid, don't mind some rain...",
+    height=120
 )
 
-sun_min, sun_max = st.sidebar.slider(
-    "Sunny days per year",
-    min_value=0, max_value=365,
-    value=(int(df.sunny_days.min()), int(df.sunny_days.max()))
-)
+if st.sidebar.button("Find my place", type="primary"):
+    if ai_input.strip():
+        with st.spinner("Analysing your preferences..."):
+            try:
+                df_stats = {
+                    "temp_min": int(df.avg_temp.min()),
+                    "temp_max": int(df.avg_temp.max()),
+                    "sun_min": int(df.sunny_days.min()),
+                    "sun_max": int(df.sunny_days.max()),
+                    "rain_min": int(df.annual_rain.min()),
+                    "rain_max": int(df.annual_rain.max()),
+                    "hum_min": int(df.avg_humidity.min()),
+                    "hum_max": int(df.avg_humidity.max()),
+                }
+                result = parse_climate_preferences(ai_input, df_stats)
+                st.session_state["ai_result"] = result
+            except Exception as e:
+                st.sidebar.error(f"Error: {e}")
+    else:
+        st.sidebar.warning("Please describe your ideal climate first.")
 
-rain_min, rain_max = st.sidebar.slider(
-    "Annual rainfall (mm)",
-    min_value=0, max_value=3000,
-    value=(int(df.annual_rain.min()), int(df.annual_rain.max()))
-)
+ai = st.session_state.get("ai_result", {})
 
-hum_min, hum_max = st.sidebar.slider(
-    "Average humidity (%)",
-    min_value=0, max_value=100,
-    value=(int(df.avg_humidity.min()), int(df.avg_humidity.max()))
-)
+if ai:
+    st.sidebar.success(ai["explanation"])
+    st.sidebar.divider()
+    st.sidebar.subheader("Fine-tune filters")
 
-# --- FILTERING ---
-filtered = df[
-    df.avg_temp.between(temp_min, temp_max) &
-    df.sunny_days.between(sun_min, sun_max) &
-    df.annual_rain.between(rain_min, rain_max) &
-    df.avg_humidity.between(hum_min, hum_max)
-].copy()
+    temp_min, temp_max = st.sidebar.slider(
+        "Average annual temperature (°C)",
+        min_value=-10, max_value=40,
+        value=(ai.get("temp_min", int(df.avg_temp.min())),
+               ai.get("temp_max", int(df.avg_temp.max())))
+    )
+    sun_min, sun_max = st.sidebar.slider(
+        "Sunny days per year",
+        min_value=0, max_value=365,
+        value=(ai.get("sun_min", int(df.sunny_days.min())),
+               ai.get("sun_max", int(df.sunny_days.max())))
+    )
+    rain_min, rain_max = st.sidebar.slider(
+        "Annual rainfall (mm)",
+        min_value=0, max_value=3000,
+        value=(ai.get("rain_min", int(df.annual_rain.min())),
+               ai.get("rain_max", int(df.annual_rain.max())))
+    )
+    hum_min, hum_max = st.sidebar.slider(
+        "Average humidity (%)",
+        min_value=0, max_value=100,
+        value=(ai.get("hum_min", int(df.avg_humidity.min())),
+               ai.get("hum_max", int(df.avg_humidity.max())))
+    )
 
-# --- SCORING ---
-def score(row):
-    total = 0
-    total += (row.avg_temp - temp_min) / max(temp_max - temp_min, 1) * 25
-    total += (row.sunny_days - sun_min) / max(sun_max - sun_min, 1) * 25
-    total += (1 - (row.annual_rain - rain_min) / max(rain_max - rain_min, 1)) * 25
-    total += (1 - (row.avg_humidity - hum_min) / max(hum_max - hum_min, 1)) * 25
-    return round(total)
+    filtered = df[
+        df.avg_temp.between(temp_min, temp_max) &
+        df.sunny_days.between(sun_min, sun_max) &
+        df.annual_rain.between(rain_min, rain_max) &
+        df.avg_humidity.between(hum_min, hum_max)
+    ].copy()
 
-if not filtered.empty:
-    filtered["score"] = filtered.apply(score, axis=1)
-    filtered = filtered.sort_values("score", ascending=False)
+    def score(row):
+        total = 0
+        total += (row.avg_temp - temp_min) / max(temp_max - temp_min, 1) * 25
+        total += (row.sunny_days - sun_min) / max(sun_max - sun_min, 1) * 25
+        total += (1 - (row.annual_rain - rain_min) / max(rain_max - rain_min, 1)) * 25
+        total += (1 - (row.avg_humidity - hum_min) / max(hum_max - hum_min, 1)) * 25
+        return round(total)
+
+    if not filtered.empty:
+        filtered["score"] = filtered.apply(score, axis=1)
+        filtered = filtered.sort_values("score", ascending=False)
+
+else:
+    filtered = pd.DataFrame()
 
 # --- MAIN LAYOUT ---
 col_map, col_list = st.columns([2, 1])
 
 with col_map:
-    st.subheader(f"Map — {len(filtered)} cities match")
+    if ai:
+        st.subheader(f"Map — {len(filtered)} cities match")
+    else:
+        st.subheader("Map")
 
-    if filtered.empty:
+    if not ai:
+        st.info("Describe your ideal place to live in the sidebar to get started.")
+    elif filtered.empty:
         st.warning("No cities match your filters. Try widening the ranges.")
     else:
-        # kolor zależny od score
         filtered["color"] = filtered["score"].apply(
             lambda s: [104, 211, 145, 200] if s >= 75
             else [246, 173, 85, 200] if s >= 50
             else [252, 129, 129, 200]
         )
-        filtered["radius"] = filtered["score"].apply(lambda s: 80000 if s >= 75 else 60000)
+        filtered["radius"] = filtered["score"].apply(
+            lambda s: 80000 if s >= 75 else 60000
+        )
 
         layer = pdk.Layer(
             "ScatterplotLayer",
@@ -128,11 +172,10 @@ with col_map:
         ))
 
 with col_list:
-    st.subheader("Top matches")
+    if ai:
+        st.subheader("Top matches")
 
-    if filtered.empty:
-        st.info("Adjust filters to see results.")
-    else:
+    if ai and not filtered.empty:
         for _, row in filtered.head(10).iterrows():
             with st.container(border=True):
                 c1, c2 = st.columns([3, 1])
@@ -146,3 +189,5 @@ with col_list:
                     )
                 with c2:
                     st.metric("Score", f"{row.score}")
+    elif ai:
+        st.info("Adjust filters to see results.")
