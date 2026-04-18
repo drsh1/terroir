@@ -1,0 +1,73 @@
+name,country,lat,lon,avg_temp,annual_rain,sunny_days,avg_humidity,temp_amplitude
+Lisbon,Portugal,38.7,-9.1,17.6,574.0,324.0,74.8,27.9
+Madeira,Portugal,32.6,-16.9,19.5,898.0,343.0,77.7,19.7
+Porto,Portugal,41.2,-8.6,15.4,1360.0,303.0,79.0,27.0
+Seville,Spain,37.4,-5.9,19.7,446.0,330.0,60.5,33.1
+Valencia,Spain,39.5,-0.4,18.2,522.0,325.0,67.2,27.7
+Barcelona,Spain,41.4,2.2,16.8,585.0,334.0,75.2,27.0
+Madrid,Spain,40.4,-3.7,15.7,527.0,310.0,59.1,36.9
+Malaga,Spain,36.7,-4.4,19.8,390.0,341.0,63.5,27.4
+Alicante,Spain,38.3,-0.5,19.3,328.0,341.0,63.3,26.2
+Las Palmas,Canary Islands,28.1,-15.4,20.6,422.0,356.0,73.4,17.7
+Tenerife,Canary Islands,28.3,-16.6,11.2,779.0,359.0,64.6,32.3
+Rome,Italy,41.9,12.5,16.6,907.0,319.0,71.7,29.8
+Milan,Italy,45.5,9.2,14.0,1207.0,287.0,72.7,32.6
+Palermo,Italy,38.1,13.4,18.9,758.0,335.0,72.3,30.5
+Nice,France,43.7,7.3,15.1,619.0,327.0,68.1,29.1
+Marseille,France,43.3,5.4,15.9,495.0,324.0,70.9,26.0
+Paris,France,48.9,2.3,12.6,767.0,244.0,74.7,33.7
+Athens,Greece,38.0,23.7,18.0,502.0,330.0,61.9,34.4
+Crete,Greece,35.3,25.1,18.3,595.0,342.0,65.4,30.6
+Dubrovnik,Croatia,42.6,18.1,16.3,1786.0,302.0,69.2,32.0
+Split,Croatia,43.5,16.4,16.6,1337.0,308.0,63.2,32.4
+Valletta,Malta,35.9,14.5,20.0,329.0,346.0,71.7,26.1
+Nicosia,Cyprus,35.2,33.4,,,,,
+Tel Aviv,Israel,32.1,34.8,,,,,
+Dubai,UAE,25.2,55.3,,,,,
+Bangkok,Thailand,13.8,100.5,,,,,
+Chiang Mai,Thailand,18.8,98.9,,,,,
+Bali,Indonesia,-8.4,115.2,,,,,
+Singapore,Singapore,1.3,103.8,,,,,
+Tokyo,Japan,35.7,139.7,,,,,
+Osaka,Japan,34.7,135.5,,,,,
+Sydney,Australia,-33.9,151.2,,,,,
+Melbourne,Australia,-37.8,145.0,,,,,
+Perth,Australia,-31.9,115.9,,,,,
+Auckland,New Zealand,-36.9,174.8,,,,,
+Cape Town,South Africa,-33.9,18.4,,,,,
+Nairobi,Kenya,-1.3,36.8,,,,,
+Casablanca,Morocco,33.6,-7.6,,,,,
+Agadir,Morocco,30.4,-9.6,,,,,
+Cairo,Egypt,30.1,31.2,,,,,
+Tunis,Tunisia,36.8,10.2,,,,,
+Miami,USA,25.8,-80.2,,,,,
+Los Angeles,USA,34.1,-118.2,,,,,
+San Diego,USA,32.7,-117.2,,,,,
+San Francisco,USA,37.8,-122.4,,,,,
+Mexico City,Mexico,19.4,-99.1,,,,,
+Cancun,Mexico,21.2,-86.8,,,,,
+Buenos Aires,Argentina,-34.6,-58.4,,,,,
+Santiago,Chile,-33.5,-70.6,,,,,
+Medellin,Colombia,6.2,-75.6,,,,,
+Amsterdam,Netherlands,52.4,4.9,,,,,
+Berlin,Germany,52.5,13.4,,,,,
+Munich,Germany,48.1,11.6,,,,,
+Vienna,Austria,48.2,16.4,,,,,
+Prague,Czech Republic,50.1,14.4,,,,,
+Warsaw,Poland,52.2,21.0,,,,,
+Krakow,Poland,50.1,20.0,,,,,
+Istanbul,Turkey,41.0,28.9,,,,,
+Antalya,Turkey,36.9,30.7,,,,,
+Tbilisi,Georgia,41.7,44.8,,,,,
+Yerevan,Armenia,40.2,44.5,,,,,
+Colombo,Sri Lanka,6.9,79.9,,,,,
+Da Nang,Vietnam,16.1,108.2,,,,,
+Ho Chi Minh,Vietnam,10.8,106.7,,,,,
+Kuala Lumpur,Malaysia,3.1,101.7,,,,,
+Montevideo,Uruguay,-34.9,-56.2,,,,,
+Funchal,Portugal,32.6,-16.9,,,,,
+Limassol,Cyprus,34.7,33.0,,,,,
+Bodrum,Turkey,37.0,27.4,,,,,
+Kotor,Montenegro,42.4,18.8,,,,,
+Plovdiv,Bulgaria,42.1,24.7,,,,,
+Varna,Bulgaria,43.2,27.9,,,,,
