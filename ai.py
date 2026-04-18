@@ -1,12 +1,11 @@
 import os
 import json
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-model = genai.GenerativeModel("gemini-2.5-flash")
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def parse_climate_preferences(user_input: str, df_stats: dict) -> dict:
     prompt = f"""
@@ -38,13 +37,16 @@ Return ONLY a valid JSON object with these exact keys:
 Be generous with ranges — don't make them too narrow.
 Return ONLY the JSON, no markdown, no backticks, no extra text.
 """
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+
     text = response.text.strip()
-    
-    # wyczyść jeśli model zwrócił markdown
+
     if text.startswith("```"):
         text = text.split("```")[1]
         if text.startswith("json"):
             text = text[4:]
-    
+
     return json.loads(text.strip())

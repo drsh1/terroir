@@ -30,13 +30,18 @@ Terroir lets you define what matters to you.
 - Python + Streamlit
 - pydeck (deck.gl) for map rendering
 - Open-Meteo API for climate data
-- Anthropic Claude API for AI features
+- Google Gemini API for AI features
 
 ## Run locally
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
-pip install streamlit pydeck pandas requests anthropic
+pip install streamlit pydeck pandas requests google-genai python-dotenv
 streamlit run app.py
+```
+
+Remember to add `.env` with your API key:
+```
+GOOGLE_API_KEY=your-key
 ```
