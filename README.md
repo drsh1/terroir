@@ -18,7 +18,6 @@ Terroir lets you define what matters to you.
 
 ## Roadmap
 
-- [ ] Weighted scoring — define what matters most to you
 - [ ] Expand to 150+ cities with full climate data
 - [ ] UI / UX
 - [ ] Add geography filters: proximity to mountains, sea, city size
