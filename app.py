@@ -67,50 +67,60 @@ ai = st.session_state.get("ai_result", {})
 if ai:
     st.sidebar.success(ai["explanation"])
     st.sidebar.divider()
-    st.sidebar.subheader("Fine-tune filters")
-    
-    # --- WEIGHTS (NEW) ---
-    # We allow the user to define how important each parameter is.
-    # The AI provides initial weights, but manual override is key for personalization.
-    st.sidebar.write("Importance (Weights)")
+    st.sidebar.subheader("Fine-tune results")
     
     ai_weights = ai.get("weights", {"temp": 25, "sun": 25, "rain": 25, "hum": 25})
-    
-    w_temp = st.sidebar.slider("Temperature importance", 0, 100, ai_weights.get("temp", 25), key="w_temp")
-    w_sun = st.sidebar.slider("Sunshine importance", 0, 100, ai_weights.get("sun", 25), key="w_sun")
-    w_rain = st.sidebar.slider("Rainfall importance", 0, 100, ai_weights.get("rain", 25), key="w_rain")
-    w_hum = st.sidebar.slider("Humidity importance", 0, 100, ai_weights.get("hum", 25), key="w_hum")
-    
-    total_w = w_temp + w_sun + w_rain + w_hum
-    # If all weights are 0, we avoid division by zero by setting a default
-    total_w = max(total_w, 1) 
-    
-    st.sidebar.divider()
 
-    temp_min, temp_max = st.sidebar.slider(
-        "Average annual temperature (°C)",
-        min_value=-10, max_value=40,
-        value=(ai.get("temp_min", int(df.avg_temp.min())),
-               ai.get("temp_max", int(df.avg_temp.max())))
-    )
-    sun_min, sun_max = st.sidebar.slider(
-        "Sunny days per year",
-        min_value=0, max_value=365,
-        value=(ai.get("sun_min", int(df.sunny_days.min())),
-               ai.get("sun_max", int(df.sunny_days.max())))
-    )
-    rain_min, rain_max = st.sidebar.slider(
-        "Annual rainfall (mm)",
-        min_value=0, max_value=3000,
-        value=(ai.get("rain_min", int(df.annual_rain.min())),
-               ai.get("rain_max", int(df.annual_rain.max())))
-    )
-    hum_min, hum_max = st.sidebar.slider(
-        "Average humidity (%)",
-        min_value=0, max_value=100,
-        value=(ai.get("hum_min", int(df.avg_humidity.min())),
-               ai.get("hum_max", int(df.avg_humidity.max())))
-    )
+    # --- TEMPERATURE ---
+    st.sidebar.markdown("##### 🌡 Temperature")
+    c1, c2 = st.sidebar.columns([2, 1])
+    with c1:
+        temp_min, temp_max = st.slider(
+            "Range (°C)", -10, 40,
+            (ai.get("temp_min", int(df.avg_temp.min())), ai.get("temp_max", int(df.avg_temp.max()))),
+            key="temp_range"
+        )
+    with c2:
+        w_temp = st.slider("Weight (0-100)", 0, 100, ai_weights.get("temp", 25), key="w_temp")
+
+    # --- SUNSHINE ---
+    st.sidebar.markdown("##### ☀️ Sunshine")
+    c1, c2 = st.sidebar.columns([2, 1])
+    with c1:
+        sun_min, sun_max = st.slider(
+            "Days per year", 0, 365,
+            (ai.get("sun_min", int(df.sunny_days.min())), ai.get("sun_max", int(df.sunny_days.max()))),
+            key="sun_range"
+        )
+    with c2:
+        w_sun = st.slider("Weight (0-100)", 0, 100, ai_weights.get("sun", 25), key="w_sun")
+
+    # --- RAINFALL ---
+    st.sidebar.markdown("##### 🌧 Rainfall")
+    c1, c2 = st.sidebar.columns([2, 1])
+    with c1:
+        rain_min, rain_max = st.slider(
+            "Annual (mm)", 0, 3000,
+            (ai.get("rain_min", int(df.annual_rain.min())), ai.get("rain_max", int(df.annual_rain.max()))),
+            key="rain_range"
+        )
+    with c2:
+        w_rain = st.slider("Weight (0-100)", 0, 100, ai_weights.get("rain", 25), key="w_rain")
+
+    # --- HUMIDITY ---
+    st.sidebar.markdown("##### 💧 Humidity")
+    c1, c2 = st.sidebar.columns([2, 1])
+    with c1:
+        hum_min, hum_max = st.slider(
+            "Avg (%)", 0, 100,
+            (ai.get("hum_min", int(df.avg_humidity.min())), ai.get("hum_max", int(df.avg_humidity.max()))),
+            key="hum_range"
+        )
+    with c2:
+        w_hum = st.slider("Weight (0-100)", 0, 100, ai_weights.get("hum", 25), key="w_hum")
+
+    st.sidebar.divider()
+    total_w = max(w_temp + w_sun + w_rain + w_hum, 1)
 
     filtered = df[
         df.avg_temp.between(temp_min, temp_max) &
