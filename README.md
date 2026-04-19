@@ -18,12 +18,15 @@ Terroir lets you define what matters to you.
 
 ## Roadmap
 
+- [ ] Weighted scoring — define what matters most to you
 - [ ] Expand to 150+ cities with full climate data
+- [ ] UI / UX
 - [ ] Add geography filters: proximity to mountains, sea, city size
 - [ ] Cost of living layer
-- [ ] Lifestyle filters: air quality, safety, healthcare
-- [ ] Weighted scoring — define what matters most to you
-- [ ] Snowflake integration
+- [ ] Lifestyle filters: air quality, safety, healthcare, food?
+- [ ] Estethics filters: cultural monuments? architecture style? color of sea / rocks?
+
+
 
 ## Tech stack
 

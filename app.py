@@ -49,6 +49,14 @@ if st.sidebar.button("Find my place", type="primary"):
                 }
                 result = parse_climate_preferences(ai_input, df_stats)
                 st.session_state["ai_result"] = result
+                
+                # Reset weight sliders in session state to AI-suggested values
+                # PATTERN: Explicit State Reset for Interactive Components
+                if "weights" in result:
+                    st.session_state["w_temp"] = result["weights"].get("temp", 25)
+                    st.session_state["w_sun"] = result["weights"].get("sun", 25)
+                    st.session_state["w_rain"] = result["weights"].get("rain", 25)
+                    st.session_state["w_hum"] = result["weights"].get("hum", 25)
             except Exception as e:
                 st.sidebar.error(f"Error: {e}")
     else:
@@ -60,6 +68,24 @@ if ai:
     st.sidebar.success(ai["explanation"])
     st.sidebar.divider()
     st.sidebar.subheader("Fine-tune filters")
+    
+    # --- WEIGHTS (NEW) ---
+    # We allow the user to define how important each parameter is.
+    # The AI provides initial weights, but manual override is key for personalization.
+    st.sidebar.write("Importance (Weights)")
+    
+    ai_weights = ai.get("weights", {"temp": 25, "sun": 25, "rain": 25, "hum": 25})
+    
+    w_temp = st.sidebar.slider("Temperature importance", 0, 100, ai_weights.get("temp", 25), key="w_temp")
+    w_sun = st.sidebar.slider("Sunshine importance", 0, 100, ai_weights.get("sun", 25), key="w_sun")
+    w_rain = st.sidebar.slider("Rainfall importance", 0, 100, ai_weights.get("rain", 25), key="w_rain")
+    w_hum = st.sidebar.slider("Humidity importance", 0, 100, ai_weights.get("hum", 25), key="w_hum")
+    
+    total_w = w_temp + w_sun + w_rain + w_hum
+    # If all weights are 0, we avoid division by zero by setting a default
+    total_w = max(total_w, 1) 
+    
+    st.sidebar.divider()
 
     temp_min, temp_max = st.sidebar.slider(
         "Average annual temperature (°C)",
@@ -94,12 +120,24 @@ if ai:
     ].copy()
 
     def score(row):
-        total = 0
-        total += (row.avg_temp - temp_min) / max(temp_max - temp_min, 1) * 25
-        total += (row.sunny_days - sun_min) / max(sun_max - sun_min, 1) * 25
-        total += (1 - (row.annual_rain - rain_min) / max(rain_max - rain_min, 1)) * 25
-        total += (1 - (row.avg_humidity - hum_min) / max(hum_max - hum_min, 1)) * 25
-        return round(total)
+        # We normalize each parameter's contribution by its range and then multiply by its weight.
+        # This ensures that even if ranges differ wildly, the importance (weight) is respected.
+        # PATTERN: Normalized Weighted Scoring
+        
+        s_temp = (row.avg_temp - temp_min) / max(temp_max - temp_min, 1)
+        s_sun = (row.sunny_days - sun_min) / max(sun_max - sun_min, 1)
+        s_rain = 1 - (row.annual_rain - rain_min) / max(rain_max - rain_min, 1)
+        s_hum = 1 - (row.avg_humidity - hum_min) / max(hum_max - hum_min, 1)
+        
+        # Multiply by weights and normalize to 0-100 scale
+        weighted_score = (
+            s_temp * w_temp + 
+            s_sun * w_sun + 
+            s_rain * w_rain + 
+            s_hum * w_hum
+        ) / total_w * 100
+        
+        return round(weighted_score)
 
     if not filtered.empty:
         filtered["score"] = filtered.apply(score, axis=1)
