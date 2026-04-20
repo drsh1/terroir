@@ -19,7 +19,7 @@ Terroir lets you define what matters to you.
 ## Roadmap
 
 - [ ] Expand to 150+ cities with full climate data
-- [ ] UI / UX
+- [ ] further UI / UX improvements
 - [ ] Add geography filters: proximity to mountains, sea, city size
 - [ ] Cost of living layer
 - [ ] Lifestyle filters: air quality, safety, healthcare, food?
